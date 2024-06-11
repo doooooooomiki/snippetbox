@@ -10,7 +10,7 @@ import (
 // Define a home handler function which writes a byte slice
 // containing "Hello from Snippetbox" as the response body
 func home(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello from Snippetbox"))
+	w.Write([]byte("Hello from Snippetbox\n"))
 }
 
 // Add a snippet view handler function
@@ -27,13 +27,18 @@ func snippetView(w http.ResponseWriter, r *http.Request) {
 
 	// Use the fmt.Sprintf() function to interpolate the id value with a message,
 	// then write it as the HTTP response
-	msg := fmt.Sprintf("Display a specific snipped with ID %d...", id)
+	msg := fmt.Sprintf("Display a specific snipped with ID %d...\n", id)
 	w.Write([]byte(msg))
 }
 
 // Add a snippet create handler function
 func snippetCreate(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Display a form for creating a new snippet..."))
+	w.Write([]byte("Display a form for creating a new snippet...\n"))
+}
+
+// Add a snipped create POST handler function
+func snippetCreatePost(w http.ResponseWriter, r *http.Request){
+	w.Write([]byte("Save a new snippet... \n"))
 }
 
 func main() {
@@ -41,9 +46,14 @@ func main() {
 	// a new servemux, then register the home function
 	// as the handler for the "/" URL pattern.
 	mux := http.NewServeMux()
-	mux.HandleFunc("/{$}", home)
-	mux.HandleFunc("/snippet/view/{id}", snippetView)
-	mux.HandleFunc("/snippet/create", snippetCreate)
+
+	// Prefix the route patterns with the required HTTP method
+	// (for now, we will restrict all three routes to acting on GET requests).
+	mux.HandleFunc("GET /{$}", home)
+	mux.HandleFunc("GET /snippet/view/{id}", snippetView)
+	mux.HandleFunc("GET /snippet/create", snippetCreate)
+	// Create the new route, which is restricted to POST request only.
+	mux.HandleFunc("POST /snippet/create", snippetCreatePost)
 
 	// Print a log message to say that the server is starting.
 	log.Print("starting server on :4000")
